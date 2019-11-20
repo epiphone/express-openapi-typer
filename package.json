@@ -1,0 +1,37 @@
+{
+  "name": "express-openapi-typer",
+  "version": "0.0.1",
+  "description": "Code-generation-free conversion of OpenAPI schema into typed Express request handlers",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "lint": "tslint --project ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/epiphone/express-openapi-typer.git"
+  },
+  "keywords": [
+    "express",
+    "openapi",
+    "typescript",
+    "swagger"
+  ],
+  "author": "Aleksi Pekkala <aleksipekkala@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/epiphone/express-openapi-typer/issues"
+  },
+  "homepage": "https://github.com/epiphone/express-openapi-typer#readme",
+  "prettier": {
+    "semi": false,
+    "singleQuote": true
+  },
+  "devDependencies": {
+    "prettier": "^1.19.1",
+    "tslint": "^5.20.1",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-config-standard": "^9.0.0",
+    "typescript": "^3.7.2"
+  }
+}
