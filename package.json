@@ -27,11 +27,18 @@
     "semi": false,
     "singleQuote": true
   },
+  "dependencies": {
+    "express": "^4.17.1",
+    "json-schema-type-mapper": "../json-schema-type-mapper",
+    "json-schema-typed": "^7.0.3"
+  },
   "devDependencies": {
+    "@types/express": "^4.17.2",
+    "@types/express-serve-static-core": "^4.17.0",
     "prettier": "^1.19.1",
     "tslint": "^5.20.1",
     "tslint-config-prettier": "^1.18.0",
     "tslint-config-standard": "^9.0.0",
-    "typescript": "^3.7.2"
+    "typescript": "^3.7.3"
   }
 }
