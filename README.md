@@ -1,4 +1,6 @@
 # express-openapi-typer
+![](https://github.com/epiphone/express-openapi-typer/workflows/CI/badge.svg) [![npm version](https://badge.fury.io/js/express-openapi-typer.svg)](https://badge.fury.io/js/express-openapi-typer)
+
 ## Caution! Alpha-level software ahead. Use at your own peril
 Code-generation-free conversion of **OpenAPI v3.1** schema into **type-checked Express request handlers**.
 
