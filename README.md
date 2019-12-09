@@ -5,8 +5,8 @@
 Code-generation-free conversion of **OpenAPI v3.1** schema into **type-checked Express request handlers**.
 
 Derive Express handler types from an OpenAPI schema to get
-- type errors when a handler doesn't match the schema,
-- and auto-completion on handler path, `req.param`, `req.query`, `req.body`, `res.send()`, `res.json()` etc.
+- type errors when a handler doesn't match the schema, and
+- auto-completion on handler path, `req.param`, `req.query`, `req.body`, `res.send()`, `res.json()` etc.
 
 Note that the library **does not perform runtime validation** against the OpenAPI schema: add something like https://github.com/Hilzu/express-openapi-validate for that purpose.
 
@@ -33,7 +33,7 @@ interface PetStoreSchema {
 }
 ```
 
-And then override your Express router's type from
+Then override your Express router's type from
 
 ```typescript
 const router = express.Router()
@@ -53,7 +53,7 @@ Handler functions in `router` now get type-checked as per `PetStoreSchema`! For 
 
 ### Access OpenAPI schema type from a runtime value
 
-It can be useful to instantiate the OpenAPI schema as a runtime value instead of a plain type. For example when serving the schema as documentation or handling validation we need to access the schema at runtime. In cases like these combine `typeof` and [`as const`](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-4.html#const-assertions) to access the schema type:
+It can be useful to instantiate the OpenAPI schema as a runtime value instead of just defining a type. For example when serving the schema as documentation or handling validation we need to access the schema at runtime. In cases like these combine `typeof` and [`as const`](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-4.html#const-assertions) to access the schema value's type:
 
 ```typescript
 const petStoreSchema = {
@@ -91,7 +91,4 @@ You can also select a subset of `express.Router` with [`Pick`/`Omit`](https://ww
   - requires some sort of manual mapping as we can't take `"#/components/schemas/NewUser"` apart at type-level
 
 ## Related projects
-- https://github.com/rawrmaan/restyped
-- https://github.com/hmil/rest.ts
-- https://stoplight.io/open-source/prism/ Prism is an open source mock server that can mimic your API’s behavior as if you already built it. Servers are generated from your OpenAPI v2/v3 (formerly known as Swagger) documents.
-- apiaryio/dredd
+- Check out [restyped](https://github.com/rawrmaan/restyped) and [rest.ts](https://github.com/hmil/rest.ts) for different approaches to type-safe REST APIs
