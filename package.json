@@ -7,6 +7,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "lint": "tslint --project .",
+    "prepare": "install-self-peers -- --ignore-scripts && yarn build",
     "test": "echo TODO"
   },
   "repository": {
@@ -30,13 +31,16 @@
     "singleQuote": true
   },
   "dependencies": {
-    "express": "^4.17.1",
     "json-schema-type-mapper": "^0.0.2",
     "json-schema-typed": "^7.0.3"
   },
-  "devDependencies": {
+  "peerDependencies": {
     "@types/express": "^4.17.2",
     "@types/express-serve-static-core": "^4.17.0",
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "@team-griffin/install-self-peers": "^1.1.1",
     "prettier": "^1.19.1",
     "tslint": "^5.20.1",
     "tslint-config-prettier": "^1.18.0",
