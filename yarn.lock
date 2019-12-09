@@ -355,8 +355,9 @@ js-yaml@^3.13.1:
     argparse "^1.0.7"
     esprima "^4.0.0"
 
-json-schema-type-mapper@../json-schema-type-mapper:
+json-schema-type-mapper@^0.0.2:
   version "0.0.2"
+  resolved "https://registry.yarnpkg.com/json-schema-type-mapper/-/json-schema-type-mapper-0.0.2.tgz#d00a58b8784676810a6da4ecf8c87988239d2fa2"
   dependencies:
     json-schema-typed "^7.0.2"
 
