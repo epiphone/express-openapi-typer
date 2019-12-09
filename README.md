@@ -52,8 +52,6 @@ const router = express.Router() as OpenAPIRouter<MySchema> & express.Router
 You can also select a subset of `express.Router` with [`Pick`/`Omit`](https://www.typescriptlang.org/docs/handbook/utility-types.html#picktk) when allowing additional methods only for a specific HTTP method, for example.
 
 ## TODO
-- path parameters
-- query parameters
 - response and request headers
 - async handlers
 - API client types, axios?

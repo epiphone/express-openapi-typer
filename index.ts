@@ -1,5 +1,5 @@
 import * as express from 'express-serve-static-core' // tslint:disable-line:no-implicit-dependencies
-import { Schema as JSONSchema } from 'json-schema-type-mapper'
+import * as JSONSchemaTypeMapper from 'json-schema-type-mapper'
 import * as oa from './OpenAPI'
 
 // TODO: for now assuming schema.components.schemas is populated and doesn't contain `$ref` objects
@@ -29,6 +29,11 @@ export type SchemasById<S extends OpenAPIObject> = {
   >
 }
 
+export type JSONSchema<
+  T,
+  S extends OpenAPIObject
+> = JSONSchemaTypeMapper.Schema<T, SchemasById<S>>
+
 /**
  * Force TS to load a type that has not been computed
  * https://github.com/pirix-gh/ts-toolbelt
@@ -54,8 +59,29 @@ export type RequestBody<
   Method extends keyof S['paths'][Path],
   O extends S['paths'][Path][Method] = S['paths'][Path][Method]
 > = Compute<
-  | JSONSchema<ValueOf<O['requestBody']['content']>['schema'], SchemasById<S>>
+  | JSONSchema<ValueOf<O['requestBody']['content']>['schema'], S>
   | (O['requestBody']['required'] extends true ? never : undefined)
+>
+
+export type ParametersIn<
+  S extends OpenAPIObject,
+  Path extends keyof S['paths'],
+  Method extends keyof S['paths'][Path],
+  In extends oa.ParameterLocation
+> = S['paths'][Path][Method]['parameters'] extends Array<infer P>
+  ? Extract<P, { in: In }>
+  : never
+
+export type Parameters<
+  S extends OpenAPIObject,
+  P extends keyof S['paths'],
+  M extends keyof S['paths'][P],
+  In extends oa.ParameterLocation,
+  Ps extends ParametersIn<S, P, M, In> = ParametersIn<S, P, M, In>
+> = Compute<
+  {
+    [Name in Ps['name']]: JSONSchema<Extract<Ps, { name: Name }>['schema'], S>
+  }
 >
 
 /** Gather OpenAPI operations under a single flat union for easier processing */
@@ -67,7 +93,10 @@ export type Operation<S extends OpenAPIObject> = ValueOf<
           method: Method
           operationId: S['paths'][Path][Method]['operationId']
           path: Path
-          params: {} // TODO dig up params
+
+          headers: Parameters<S, Path, Method, 'header'>
+          params: Parameters<S, Path, Method, 'path'>
+          query: Parameters<S, Path, Method, 'query'>
 
           // TODO handle different content types and `required`:
           requestBody: RequestBody<S, Path, Method>
@@ -77,7 +106,7 @@ export type Operation<S extends OpenAPIObject> = ValueOf<
             ValueOf<
               S['paths'][Path][Method]['responses']
             >['content']['application/json']['schema'],
-            SchemasById<S>
+            S
           >
         }
       }
@@ -95,17 +124,31 @@ export type PathsByMethod<
 }
 
 interface OperationObject {
-  params: any
+  params: Record<string, any>
   path: string
+  query: Record<string, any>
   responseBody: any
   requestBody: any
 }
 
+// `express.Request` has no generic parameter for `query` so we have to roll out
+// our own `Request` type:
+export type Request<O extends OperationObject> = Compute<
+  { query: O['query'] } & Omit<
+    express.Request<O['params'], O['responseBody'], O['requestBody']>,
+    'query'
+  >
+>
+
+export type RequestHandler<O extends OperationObject> = (
+  req: Request<O>,
+  res: express.Response<O['responseBody']>,
+  next: express.NextFunction
+) => any
+
 export type RouterMatcher<O extends OperationObject> = (
   path: O['path'],
-  ...handlers: Array<
-    express.RequestHandler<O['params'], O['responseBody'], O['requestBody']>
-  >
+  ...handlers: Array<RequestHandler<O>>
 ) => any
 
 type HTTPMethod =
