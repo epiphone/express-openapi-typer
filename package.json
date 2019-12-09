@@ -2,7 +2,8 @@
   "name": "express-openapi-typer",
   "version": "0.0.1",
   "description": "Code-generation-free conversion of OpenAPI schema into typed Express request handlers",
-  "main": "index.js",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "lint": "tslint --project ."

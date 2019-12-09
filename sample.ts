@@ -1,6 +1,6 @@
 import * as express from 'express'
-import { OpenAPIRouter } from '.'
 import PetStoreSchema from './PetStoreSchema'
+import { OpenAPIRouter } from './src'
 
 const router = (express.Router() as unknown) as OpenAPIRouter<PetStoreSchema>
 
@@ -16,6 +16,5 @@ router.delete('/pets/{id}', (req, res, next) => {
 })
 
 router.post('/pets', (req, res, next) => {
-  // req.body autocompletes to `{ [x: string]: JSONValue; name: string; tag?: string | undefined; }`
   res.send({ name: req.body.name, id: 1 })
 })

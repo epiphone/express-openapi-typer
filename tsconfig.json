@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
+    "declaration": true,
     "moduleResolution": "node",
-    "noEmit": true,
-    "strict": true
-  }
+    "outDir": "build",
+    "strict": true,
+  },
+  "include": [
+    "./src/**/*"
+  ]
 }

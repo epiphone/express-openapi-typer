@@ -1,57 +1,14 @@
 import * as express from 'express-serve-static-core' // tslint:disable-line:no-implicit-dependencies
-import * as JSONSchemaTypeMapper from 'json-schema-type-mapper'
+import { JSONSchema } from './JSONSchema'
 import * as oa from './OpenAPI'
+import { Compute, UnionToIntersection, ValueOf } from './util'
 
 // TODO: for now assuming schema.components.schemas is populated and doesn't contain `$ref` objects
-type OpenAPIObject = oa.OpenAPIObject & {
+export type OpenAPIObject = oa.OpenAPIObject & {
   components: {
     schemas: Record<string, oa.SchemaObject>
   }
 }
-
-// Digging up schemas by hand since json-schema-type-mapper expects to find them
-// under `/definitions`, not in OpenAPI's `/components/schemas`:
-
-export type Schemas<S extends OpenAPIObject> = S['components']['schemas']
-
-export type SchemaIds<S extends OpenAPIObject> = Exclude<
-  ValueOf<Schemas<S>>['$id'],
-  undefined
->
-
-export type SchemasById<S extends OpenAPIObject> = {
-  [Id in SchemaIds<S>]: ValueOf<
-    {
-      [P in keyof Schemas<S>]: Schemas<S>[P]['$id'] extends Id
-        ? Schemas<S>[P]
-        : never
-    }
-  >
-}
-
-export type JSONSchema<
-  T,
-  S extends OpenAPIObject
-> = JSONSchemaTypeMapper.Schema<T, SchemasById<S>>
-
-/**
- * Force TS to load a type that has not been computed
- * https://github.com/pirix-gh/ts-toolbelt
- */
-export type Compute<A extends any> = A extends Function // tslint:disable-line:ban-types
-  ? A
-  : { [K in keyof A]: A[K] } & {}
-
-/**
- * Courtesy of @jcalz at https://stackoverflow.com/a/50375286/1763012
- */
-type UnionToIntersection<U> = (U extends any
-? (k: U) => void
-: never) extends (k: infer I) => void
-  ? I
-  : never
-
-type ValueOf<T extends object> = T[keyof T]
 
 export type RequestBody<
   S extends OpenAPIObject,
@@ -61,6 +18,19 @@ export type RequestBody<
 > = Compute<
   | JSONSchema<ValueOf<O['requestBody']['content']>['schema'], S>
   | (O['requestBody']['required'] extends true ? never : undefined)
+>
+
+export type ResponseBody<
+  S extends OpenAPIObject,
+  Path extends keyof S['paths'],
+  Method extends keyof S['paths'][Path]
+> = Compute<
+  JSONSchema<
+    ValueOf<
+      S['paths'][Path][Method]['responses']
+    >['content']['application/json']['schema'],
+    S
+  >
 >
 
 export type ParametersIn<
@@ -98,16 +68,11 @@ export type Operation<S extends OpenAPIObject> = ValueOf<
           params: Parameters<S, Path, Method, 'path'>
           query: Parameters<S, Path, Method, 'query'>
 
-          // TODO handle different content types and `required`:
+          // TODO handle different content types:
           requestBody: RequestBody<S, Path, Method>
 
           // TODO handle different content types, headers and status codes:
-          responseBody: JSONSchema<
-            ValueOf<
-              S['paths'][Path][Method]['responses']
-            >['content']['application/json']['schema'],
-            S
-          >
+          responseBody: ResponseBody<S, Path, Method>
         }
       }
     >

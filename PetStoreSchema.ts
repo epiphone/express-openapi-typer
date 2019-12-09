@@ -1,4 +1,4 @@
-import { OpenAPIObject } from './OpenAPI'
+import { OpenAPIObject } from './src/OpenAPI'
 
 export default interface OpenAPISchema extends OpenAPIObject {
   openapi: '3.0.0'
